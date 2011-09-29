@@ -1,0 +1,72 @@
+<!DOCTYPE HTML>
+<html lang="ru-RU">
+<head>
+    <title>Remember Notes</title>
+    <meta charset="utf-8"/>
+
+    <style>
+        * { padding: 0; margin: 0; }
+        body { font: 18px 'PT Sans', serif; margin: 3%; }
+        .nnnote-item { border: #ddd 1px dotted; padding: 5px; min-height: 30px; }
+        .nnnote-active { cursor: text; border: none; outline: none; border-radius: 5px; box-shadow: 0 0 10px #F2F26F; }
+        .nnnote-add { margin: 5px 0; height: 10px; overflow: hidden; }
+        .nnnote-add:hover { background: #F2F26F; }
+
+    </style>
+
+    <script type="text/javascript" charset="utf-8" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+
+    <script type="text/javascript">
+
+    (function($) {
+		$(document).ready(function() {
+    		Nnnote.init('#nnnote');
+    	});
+
+		var Nnnote =
+    	{
+			init: function(container)
+			{
+				$('.nnnote-item', container)
+        			.live('click', function() {
+            			$(this).attr('contenteditable', true)
+            				.addClass('nnnote-active')
+            				.focus();
+            		})
+        			.live('focusout', function() {
+            			$(this).attr('contenteditable', false)
+            				.removeClass('nnnote-active');
+
+            			Nnnote.save();
+            		});
+
+				$('.nnnote-add', container)
+					.live('click', function() {
+						$(this).after('<div class="nnnote-item"></div><div class="nnnote-add"></div>');
+					});
+			},
+
+			save: function()
+			{
+				var items = {};
+				$('#nnnote .nnnote-item').each(function(i) {
+					items[i] = $(this).html();
+				});
+
+				$.post('/save', items);
+			}
+		};
+    })(jQuery);
+
+    </script>
+
+</head>
+<body id="nnnote">
+
+    <div class="nnnote-add"></div>
+    {% for note in notes %}
+        <div class="nnnote-item">{{ note.text|safe }}</div>
+        <div class="nnnote-add"></div>
+    {% endfor %}
+
+</body>
