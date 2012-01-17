@@ -37,6 +37,10 @@
             			$(this).attr('contenteditable', false)
             				.removeClass('nnnote-active');
 
+                        if ($(this).text() === '') {
+                            $(this).add($(this).next()).remove();
+                        }
+
             			Nnnote.save();
             		});
 
